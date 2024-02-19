@@ -1,0 +1,110 @@
+const express = require("express");
+const client = require('../db')
+const router = express.Router();
+const verifyToken = require("./middelware/verifytoken")
+router.use(express.json()); 
+
+router.post('/', async (req, res) => {
+  try {
+    const { page, limit } = req.body;
+
+    // First query to get the total count
+    const totalCountQuery = await client.query('SELECT COUNT(*) FROM country WHERE isdeleted = false');
+    const totalCount = totalCountQuery.rows[0].count;
+
+    // Second query to get paginated data
+    const result = await client.query(
+      'SELECT * FROM country WHERE isdeleted = false LIMIT $1 OFFSET $2 ',
+      [limit, (page - 1) * limit]
+    );
+
+    res.status(200).json({
+      data: result.rows,
+      pagination: {
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+router.post('/addcountry', async (req, res) => {
+  try {
+      const { countryName, countryCode, phoneCode } = req.body;
+
+      // Check if the country name already exists
+      const checkQuery = 'SELECT * FROM country WHERE countryname = $1';
+      const checkResult = await client.query(checkQuery, [countryName]);
+
+      if (checkResult.rows.length > 0) {
+          // Country already exists
+          const existingCountry = checkResult.rows[0];
+
+          if (existingCountry.isdeleted ) {
+            console.log(existingCountry.isdeleted)
+              const updateQuery = 'UPDATE country SET isdeleted = false WHERE countryname = $1 RETURNING *';
+              const updateResult = await client.query(updateQuery, [existingCountry.countryname]);
+              return res.status(200).json({ status: 'success', data: updateResult.rows });
+          } else {
+              // Country is deleted, update and return
+              return res.status(409).json({ message: 'Country already exists.' });
+          }
+      } else {
+          // Country does not exist, add country
+          const insertQuery = 'INSERT INTO country (countryname, countrycode, phonecode) VALUES ($1, $2, $3) RETURNING *';
+          const insertResult = await client.query(insertQuery, [countryName, countryCode, phoneCode]);
+          return res.status(200).json({ finalStatus: 'success', data: insertResult.rows });
+      }
+  } catch (err) {
+      console.error(err);
+      return res.status(500).json({ status: 'error', message: 'Internal server error.' });
+  }
+});
+
+router.delete('/countrydelete/:id', (req,res)=>{
+    //res.send("hello");
+
+    const countryid  = req.params.id;
+     let result = client.query('UPDATE country SET isdeleted = true WHERE countryid = $1',[countryid])
+     res.send(result.rows)
+
+    })
+
+    router.put('/countryupdate',(req,res)=>{
+        const {countryname, countrycode, phonecode, countryid} = req.body;
+        let result = client.query('UPDATE country SET countryname = $1, countrycode = UPPER($2), phonecode = $3 WHERE countryid = $4 RETURNING *',
+        [countryname, countrycode, phonecode, countryid])
+        res.send(result.row)
+
+    })
+
+    router.post('/checkDuplicateCountry', async (req, res) => {
+  try {
+    const { countryName } = req.body;
+
+    if (typeof countryName !== 'string') {
+      return res.status(400).json({ error: 'Invalid countryName provided' });
+    }
+
+    // Check for duplicate city name
+    const duplicateCity = await client.query(
+      'SELECT COUNT(*) FROM country WHERE LOWER(countryname) = LOWER($1) AND isdeleted = false',
+      [countryName.toLowerCase()]
+    );
+
+    res.status(200).json({
+      isDuplicate: duplicateCity.rows[0].count > 0, // Check the count in the first row
+    });
+  } catch (error) {
+    console.error('Error checking duplicate country name:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+module.exports = router;
