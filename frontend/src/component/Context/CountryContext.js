@@ -15,7 +15,7 @@ export const CountryProvider = ({ children }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [count, setCount] = useState(1);
 
-    const fetchDataFromApi = async (page, limit) => {
+    const fetchDataFromApi = async (page, limit,order,column) => {
       try {
         const response = await fetch('http://localhost:8000', {
           method: 'POST',
@@ -25,6 +25,8 @@ export const CountryProvider = ({ children }) => {
           body: JSON.stringify({
             page,
             limit,
+            order,
+            column,
           }),
         });
     
@@ -44,82 +46,124 @@ export const CountryProvider = ({ children }) => {
         console.error('Error fetching data:', error);
       }
     };
-
     
-const deleteDataFromApi = async (id) => {
-    try {
-        const response = await fetch(`http://localhost:8000/countrydelete/${id}`, {
-            method: 'DELETE',
-        });
+    // const insertData = async (newData,page, limit,order,column) => {
+    //   console.log(newData)
+    // try {
+    //   const duplicateCheckResponse = await fetch('http://localhost:8000/checkDuplicateCountry', {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //       },
+    //       body: JSON.stringify({
+    //         countryName:  newData.countryname,
+            
+    //       }),
+    //     });
+    
+    //     const duplicateCheckResult = await duplicateCheckResponse.json();
+    
+    //     if (duplicateCheckResult.isDuplicate) {
+    //       // Show a toast or handle duplicate city name
+    //       toast.error('Country with the same name already exists');
+    //       return null; // Return null to indicate failure due to duplicate city name
+    //     }
+    
+    //     const response = await fetch('http://localhost:8000/addcountry', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify({
+    //             countryName: newData.countryname,
+    //             countryCode: newData.countrycode,
+    //             phoneCode: newData.phonecode,
+    //             page,
+    //         limit,
+    //         order,
+    //         column,
+    //         }),
+    //     });
+    
+    //     if (response.ok) {
+    //         const result = await response.json();
+    //         const { pagination } = result;
+    //         console.log(result)
+    //         setCountryData(result.data);
+    //         setTotalPages(pagination.totalPages);
+    //       setCurrentPage(pagination.currentPage);
+    //       setCount(pagination.totalCount)
+
+    //         if (result.finalStatus === 'success') {
+    //           console.log("hii")
+    //           toast.success(`${newData.countryname} Country is Added`);
+    //         } else if (result.message === 'Country already exists.') {
+    //           toast.error("Country already exists");
+    //         } else {
+    //           toast.success("Country is Added");
+    //         }
+    //       } else {
+    //         toast.error("Failed to add country. Please try again.");
+    //       }
         
+    // } catch (error) {
+    //     console.error('Error saving data:', error);
+    // }
+    // };
+    
+    
+    const insertData = async (newData,page, limit,order,column) => {
+      console.log(newData)
+    try {
+    
+        const response = await fetch('http://localhost:8000/addcountry', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                countryName: newData.countryname,
+                countryCode: newData.countrycode,
+                phoneCode: newData.phonecode,
+                page,
+            limit,
+            order,
+            column,
+            }),
+        });
+
+        const result = await response.json();
+        if (result.error) {
+          // Handle the error message here
+          toast.error(result.error);
+          return result.error
+        }
+
         if (response.ok) {
             
-            const data = await response.text();
-            const parsedData = data ? JSON.parse(data) : null;
-            
-            if (parsedData) {
-                setCountryData(parsedData);
+            const { pagination } = result;
+            console.log(result)
+            setCountryData(result.data);
+            setTotalPages(pagination.totalPages);
+          setCurrentPage(pagination.currentPage);
+          setCount(pagination.totalCount)
+
+            if (result.finalStatus === 'success') {
+              console.log("hii")
+              toast.success(`${newData.countryname} Country is Added`);
+            } else if (result.message === 'Country already exists.') {
+              toast.error("Country already exists");
+            } else {
+              toast.success("Country is Added");
             }
-        } 
+          } 
+        
     } catch (error) {
-        console.error('Error deleting data:', error);
+        console.error('Error saving data:', error);
     }
-};
+    };
 
-const insertData = async (newData) => {
-  try {
-    const duplicateCheckResponse = await fetch('http://localhost:8000/checkDuplicateCountry', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          countryName:  newData.countryname,
-        }),
-      });
-  
-      const duplicateCheckResult = await duplicateCheckResponse.json();
-  
-      if (duplicateCheckResult.isDuplicate) {
-        // Show a toast or handle duplicate city name
-        toast.error('Country with the same name already exists');
-        return null; // Return null to indicate failure due to duplicate city name
-      }
-
-      const response = await fetch('http://localhost:8000/addcountry', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              countryName: newData.countryname,
-              countryCode: newData.countrycode,
-              phoneCode: newData.phonecode,
-          }),
-      });
-
-      if (response.ok) {
-          const data = await response.json();
-          console.log(data)
-          if (data.finalStatus === 'success') {
-            console.log("hii")
-            toast.success("Country is Added");
-          } else if (data.message === 'Country already exists.') {
-            toast.error("Country already exists");
-          } else {
-            toast.success("Country is Added");
-          }
-        } else {
-          toast.error("Failed to add country. Please try again.");
-        }
-      
-  } catch (error) {
-      console.error('Error saving data:', error);
-  }
-};
-
-
-  const updateData = async (updatedCountry) => {
+    const updateData = async (updatedCountry) => {
     console.log("insidecontext",updatedCountry)
     try {
       const response = await fetch('http://localhost:8000/countryupdate', {
@@ -131,17 +175,61 @@ const insertData = async (newData) => {
           countryname : updatedCountry.countryname,
           countrycode : updatedCountry.countrycode,
           phonecode : updatedCountry.phonecode,
-          countryid : updatedCountry.countryid,}),
+          countryid : updatedCountry.countryid,
+          
+        }),
       });
 
+      const result = await response.json();
+        if (result.error) {
+          // Handle the error message here
+          toast.error(result.error);
+          return result.error
+
+        }
+
       if (response.ok) {
-        fetchDataFromApi(currentPage,4);
+        toast.success(`${updatedCountry.countryname}  updated successfully`)
       } 
       
     } catch (error) {
       console.error('Error updating country:', error);
     }
   };
+  
+  const deleteDataFromApi = async (id,page, limit,order,column) => {
+    try {
+      const response = await fetch(`http://localhost:8000/countrydelete/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          page,
+          limit,
+          order,
+          column,
+        }),
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok) {
+        const { data, pagination } = result;
+        toast.success("Country Deleted");
+        setCountryData(data);
+        setTotalPages(pagination.totalPages);
+        setCurrentPage(pagination.currentPage);
+        setCount(pagination.totalCount)
+      } else {
+        // Display an error toast for bad requests
+        toast.error(result.error);
+      }
+    } catch (error) {
+      console.error('Error deleting data:', error);
+    }
+  };
+
 
   const filterData = async (tableName,searchData) => {
     
@@ -239,7 +327,7 @@ const insertData = async (newData) => {
   
 
 return (
-    <CountryContext.Provider value={{sort,count,totalPage,setCurrentPage, countryData,currentPage, fetchDataFromApi, deleteDataFromApi ,insertData ,updateData,filterData }}>
+    <CountryContext.Provider value={{setCountryData,sort,count,totalPage,setCurrentPage, countryData,currentPage, fetchDataFromApi, deleteDataFromApi ,insertData ,updateData,filterData }}>
     {children}
     <ToastContainer />
     </CountryContext.Provider>

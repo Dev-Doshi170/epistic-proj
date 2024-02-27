@@ -44,6 +44,7 @@ const modalSlice = createSlice({
       state.stateid = action.payload.stateid || null;
     },
     setCountryId: (state, action) => {
+      console.log(action.payload)
       state.countryid = action.payload.countryid || null;
     },
   },

@@ -11,10 +11,35 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-
+import { useNavigate } from 'react-router-dom';
 
 
 const City = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+
+        console.log("token not experied")
+      const tokenTimestamp = localStorage.getItem("tokenTimestamp");
+
+      if (tokenTimestamp) {
+        const currentTime = Date.now();
+        const expirationTime = parseInt(tokenTimestamp, 10) + 30 * 60 * 1000;  
+
+        if (currentTime > expirationTime) {
+          console.log("Token expired");
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('tokenTimestamp');
+          navigate('/');
+        }
+      }
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [navigate]);
+
+
   const { getCity,deleteCity,sortData,searchCities } = useCityContext();
   const dispatch = useDispatch();
   const { data: cities, pagination ,sort} = useSelector((state) => state.city);
@@ -26,21 +51,32 @@ const City = () => {
  
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
   const [isSearching, setIsSearching] = useState('');
-  //const [sortColumn, setSortColumn] = useState(null);
+  const [sortColumn, setSortColumn] = useState(null);
   //const [sortOrder, setSortOrder] = useState('asc');
   const [deleteId,setdeleteId] = useState();
   const [deleteName,setdeleteName] = useState();
 
   
+  // const handleSort = (column) => {
+  //   const newSortOrder = sort === 'asc' ? 'desc' : 'asc';
+  //   dispatch(setSort(newSortOrder));
+  //   setSortColumn(column)
+  //   sortData('city',pagination.currentPage,pagination.rowsPerPage,sort,column)
+  // };
+
   const handleSort = (column) => {
     const newSortOrder = sort === 'asc' ? 'desc' : 'asc';
     dispatch(setSort(newSortOrder));
-    sortData('city',pagination.currentPage,pagination.rowsPerPage,sort,column)
+
+    setSortColumn(column);
+    sortData('city', pagination.currentPage, pagination.rowsPerPage, newSortOrder, column);
   };
 
   
   
   const handleModal = async(mode,cityname,statename,countryname,cityid,countryid,stateid) => {
+    setIsSearching('');
+    //await getCity(1,pagination.rowsPerPage,sort,sortColumn );
     if (mode === 'edit') {
         console.log(countryid)
         dispatch(setSelectedCountry(countryname));
@@ -70,9 +106,9 @@ const City = () => {
 
   const handleDeleteConfirmed = async() => {
       setShowConfirmationDialog(false);
-      await deleteCity(deleteId,deleteName);
-      await getCity(pagination.currentPage,pagination.rowsPerPage );
-    
+      await deleteCity(deleteId,deleteName,pagination.currentPage,pagination.rowsPerPage,sort,sortColumn);
+      
+      setIsSearching('');
   };
 
   const handleDeleteCancelled = () => {
@@ -81,36 +117,36 @@ const City = () => {
   
   const handleChangePage = (event, newPage) => {
     dispatch(setCurrentPage(newPage));
-    getCity(newPage, pagination.rowsPerPage);
+    getCity(newPage, pagination.rowsPerPage,sort,sortColumn);
   };
 
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     console.log(newRowsPerPage)
     dispatch(setRowsPerPage(newRowsPerPage));
-    getCity(pagination.currentPage, newRowsPerPage);
+    getCity(pagination.currentPage, newRowsPerPage,sort,sortColumn);
   };
 
   const handleFirstPageButtonClick = () => {
     dispatch(setCurrentPage(1));
-    getCity(1, pagination.rowsPerPage);
+    getCity(1, pagination.rowsPerPage,sort,sortColumn);
   };
   
   const handleBackButtonClick = () => {
     const newPage = Math.max(1, pagination.currentPage - 1);
     dispatch(setCurrentPage(newPage));
-    getCity(newPage, pagination.rowsPerPage);
+    getCity(newPage, pagination.rowsPerPage,sort,sortColumn);
   };
   
   const handleNextButtonClick = async () => {
     const newPage = Math.min(pagination.totalPages, pagination.currentPage + 1);
     dispatch(setCurrentPage(newPage));
-    getCity(newPage, pagination.rowsPerPage);
+    getCity(newPage, pagination.rowsPerPage,sort,sortColumn);
   };
   
   const handleLastPageButtonClick = () => {
     dispatch(setCurrentPage(pagination.totalPages));
-    getCity(pagination.totalPages, pagination.rowsPerPage);
+    getCity(pagination.totalPages, pagination.rowsPerPage,sort,sortColumn);
   };
   
   const handleSearchChange = (event) => {
@@ -118,14 +154,15 @@ const City = () => {
       searchCities(event.target.value)
       setIsSearching(event.target.value);
     }else{
-      getCity(pagination.totalPages, pagination.rowsPerPage);
+      getCity(pagination.totalPages, pagination.rowsPerPage,sort,sortColumn);
       setIsSearching(event.target.value);
     }
   };
   
   useEffect(() => {
-    getCity(pagination.currentPage, pagination.rowsPerPage);
+    getCity(pagination.currentPage, pagination.rowsPerPage,sort,sortColumn);
   }, []);
+  
   
   return (
     <div className='w-[100%]  flex flex-col items-center justify-between gap-4'>
@@ -150,10 +187,11 @@ const City = () => {
         </div>
       </div>
     )}
-    <div className="z-0 w-[100%] flex justify-between items-baseline ">
+    <div className="z-0 w-[100%] flex justify-between items-baseline  ">
     <div className="relative flex-grow flex items-stretch">
           <input
             type="search"
+            value={isSearching}
             className="rounded-lg border-[1px] border-black p-2 w-60 bg-white placeholder:text-black"
             placeholder="Search"
             aria-label="Search"
@@ -168,13 +206,13 @@ const City = () => {
           Add City
         </button>
       </div>
-      <div className="flex-grow  min-h-[calc(100vh-24rem)] overflow-y-visible relative">
-        <TableContainer component={Paper} style={{ maxHeight: "455px", overflowY: "auto" }}>
-          <Table style={{ minWidth: 650 }}>
+      <div className="flex-grow min-h-[calc(100vh-24rem)] overflow-y-visible relative ">
+        <TableContainer component={Paper}  style={{ maxHeight: "505px", overflowY: "auto" ,boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"}}>
+          <Table style={{ minWidth: "911px" }}>
             <TableHead>
               <TableRow>
-                <TableCell style={{ textAlign: "center" }}>City ID</TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell style={{ textAlign: "center" }} className="py-2 px-4 text-center w-96">City ID</TableCell>
+                <TableCell style={{ textAlign: "center" }} className="py-2 px-4 text-center">
                   <div className="flex items-center">
                     City Name
                     <button className="ml-2 focus:outline-none" onClick={() => handleSort('cityname')}>
@@ -182,7 +220,7 @@ const City = () => {
                     </button>
                   </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="py-2 px-4 text-center">
                   <div className="flex items-center">
                   State Name
                   <button className="ml-2 focus:outline-none" onClick={() => handleSort('statename')}>
@@ -190,7 +228,7 @@ const City = () => {
                   </button>
                   </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="py-2 px-4 text-center">
                   <div className="flex items-center">
                   Country Name
                   <button className="ml-2 focus:outline-none" onClick={() => handleSort('countryname')}>
@@ -200,7 +238,7 @@ const City = () => {
                   </TableCell>
                 
                 {/* ... (other header cells) */}
-                <TableCell style={{ textAlign: "center" }}>Actions</TableCell>
+                <TableCell style={{ textAlign: "center" }} className="py-2 px-4 text-center">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -226,18 +264,33 @@ const City = () => {
                 </TableCell>
                     {/* ... (other body cells) */}
                     <TableCell style={{ textAlign: "center" }}>
-                      <button
-                        className="bg-blue-500 m-1 text-white px-3 py-1 rounded hover:bg-blue-700 transition-all duration-300 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
-                        onClick={() => handleModal("edit", city.cityname,city.statename,city.countryname,city.cityid,city.countryid,city.stateid)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(city.cityid,city.cityname)}
-                        className="bg-red-500 text-white m-1 px-3 py-1 rounded hover:bg-red-700 transition-all duration-300 focus:outline-none focus:shadow-outline-red active:bg-red-800"
-                      >
-                        Delete
-                      </button>
+                      
+                      <div className='align-baseline flex justify-end'>
+                        <button
+                          onClick={() =>handleModal("edit", city.cityname,city.statename,city.countryname,city.cityid,city.countryid,city.stateid)}
+                          className=" m-1 text-white  rounded"
+                        >
+                        <img
+                            src="Asset\icons8-edit-50.png" // Replace with the actual path to your delete icon image
+                            alt="Edit Icon"
+                            className=" " // Adjust the margin as needed
+                          />
+                          
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleDelete(city.cityid,city.cityname)
+                          }
+                          className=" text-white m-1 px-3 py-1 rounded transition-all duration-300 focus:outline-none focus:shadow-outline-red active:bg-red-800"
+                        >
+                          <img
+                            src="Asset\icons8-delete-60.png" // Replace with the actual path to your delete icon image
+                            alt="Delete Icon"
+                            className="" // Adjust the margin as needed
+                          />
+                          
+                        </button>
+                        </div>
                     </TableCell>
                   </TableRow>
                 ))

@@ -79,8 +79,17 @@ const citySlice = createSlice({
       setSort: (state, action) => {
         state.sort = action.payload;
       },
+      handleUpdatedCity: (state, action) => {
+        const updateResult = action.payload
+        const cityId = updateResult.cityid;
+        const cityIndex = state.data.findIndex(city => city.cityid === cityId);
+
+        if (cityIndex !== -1) {
+          state.data[cityIndex] = updateResult;
+        }
+      },
   },
 });
 
-export const { setCityData,setCurrentPage,setRowsPerPage,setSort } = citySlice.actions;
+export const { setCityData,setCurrentPage,setRowsPerPage,setSort,handleUpdatedCity } = citySlice.actions;
 export default citySlice.reducer;

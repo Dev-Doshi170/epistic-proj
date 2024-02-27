@@ -278,6 +278,7 @@
 import React, { useEffect, useState } from 'react';
 import { useStateContext } from './Context/StateContext';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
@@ -305,6 +306,7 @@ import Modal from './Modals/statemodal'; // Update this path
 const State = () => {
   const { fetchstate, deleteState, searchStateData,sortState } = useStateContext();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { data: states, pagination } = useSelector((state) => state.state);
   const isModalOpen = useSelector((state) => state.modal.isOpen);
   const mode = useSelector((state) => state.modal.mode);
@@ -312,13 +314,37 @@ const State = () => {
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
   const [selectedStateId, setSelectedStateId] = useState(null);
 
+  
+
   const [isSearching, setIsSearching] = useState('');
   const [sortColumn, setSortColumn] = useState(null);
-  const [sortOrder, setSortOrder] = useState('asc');
+  const [sortOrder, setSortOrder] = useState(null);
 
   useEffect(() => {
-    fetchstate(1, 5);
-  }, []);
+    fetchstate(1, 5,sortOrder,sortColumn);
+  }, [sortOrder,sortColumn]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+
+        console.log("token not experied")
+      const tokenTimestamp = localStorage.getItem("tokenTimestamp");
+
+      if (tokenTimestamp) {
+        const currentTime = Date.now();
+        const expirationTime = parseInt(tokenTimestamp, 10) + 30 * 60 * 1000;  
+
+        if (currentTime > expirationTime) {
+          console.log("Token expired");
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('tokenTimestamp');
+          navigate('/');
+        }
+      }
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [navigate]);
 
   const handleEdit = async (editedData) => {
     // Implement your edit logic here
@@ -333,8 +359,7 @@ const State = () => {
     setShowConfirmationDialog(false);
   
     if (selectedStateId) {
-      await deleteState(selectedStateId);
-      await fetchstate(pagination.currentPage, pagination.rowsperpage);
+      await deleteState(selectedStateId,pagination.currentPage,pagination.rowsperpage);
     }
   };
 
@@ -344,24 +369,24 @@ const State = () => {
 
   const handleChangePage = (event, newPage) => {
     dispatch(setCurrentPage(newPage + 1));
-    fetchstate(newPage + 1, 2);
+    fetchstate(newPage + 1, 2,sortOrder,sortColumn);
   };
 
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     dispatch(setRowsPerPage(newRowsPerPage));
-    fetchstate(1, newRowsPerPage);
+    fetchstate(1, newRowsPerPage,sortOrder,sortColumn);
   };
 
   const handleFirstPageButtonClick = () => {
     dispatch(setCurrentPage(1));
-    fetchstate(1, pagination.rowsperpage);
+    fetchstate(1, pagination.rowsperpage,sortOrder,sortColumn);
   };
 
   const handleBackButtonClick = () => {
     const newPage = Math.max(1, pagination.currentPage - 1);
     dispatch(setCurrentPage(newPage));
-    fetchstate(newPage, pagination.rowsperpage);
+    fetchstate(newPage, pagination.rowsperpage,sortOrder,sortColumn);
   };
 
   const handleNextButtonClick = () => {
@@ -372,7 +397,7 @@ const State = () => {
 
   const handleLastPageButtonClick = () => {
     dispatch(setCurrentPage(pagination.totalPages));
-    fetchstate(pagination.totalPages, pagination.rowsperpage);
+    fetchstate(pagination.totalPages, pagination.rowsperpage,sortOrder,sortColumn);
   };
 
   const handleSearchChange = (e) => {
@@ -382,14 +407,19 @@ const State = () => {
     if (searchTerm.trim() !== '') {
       searchStateData(searchTerm);
     } else {
-      fetchstate(pagination.totalPages, pagination.rowsperpage);
+      fetchstate(pagination.totalPages, pagination.rowsperpage,sortOrder,sortColumn);
     }
   };
 
   const handleSort = (column) => {
     setSortOrder((prevSortOrder) => (prevSortOrder === 'asc' ? 'desc' : 'asc'));
-    sortState(pagination.currentPage,pagination.rowsperpage,sortOrder,"state",column)
+    setSortColumn(column);
   };
+
+  // useEffect(() => {
+  //   console.log(sortOrder, sortColumn);
+  //   fetchstate(pagination.currentPage, pagination.rowsperpage,sortOrder,sortColumn);
+  // }, [sortOrder, sortColumn, pagination.currentPage, pagination.rowsperpage]);
 
   const sortedStates = states.slice().sort((a, b) => {
     if (sortColumn) {
@@ -455,35 +485,37 @@ const State = () => {
           Add state
         </button>
       </div>
-      <div className="flex-grow  min-h-[calc(100vh-24rem)] overflow-y-visible relative">
-        <TableContainer component={Paper} style={{ maxHeight: "455px", overflowY: "auto" }}>
-          <Table style={{ minWidth: 650 }}>
+      <div className="flex-grow  min-h-[calc(100vh-24rem)] overflow-y-visible relative ">
+        <TableContainer component={Paper} style={{ maxHeight: "505px", overflowY: "auto",boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"}}>
+          <Table style={{ minWidth: "911px" }}>
             <TableHead>
               <TableRow>
                 <TableCell
+                className="py-2 px-4 text-center w-96"
                   style={{ textAlign: "center", cursor: "pointer" }}
                 >
                   State ID 
                 </TableCell>
                 <TableCell
-                  style={{ textAlign: "center", cursor: "pointer" }}>
-                  <div className="flex items-center ">
-                      State Name
+                  style={{ textAlign: "center", cursor: "pointer" }} className="py-2 px-4 text-center">
+                  <div className="text-center ">
+                        State Name
                       <button className="ml-2 focus:outline-none" onClick={() => handleSort('statename')}>
                         {sortOrder === 'asc' ? '↓' : '↑'}
                       </button>
                     </div>
                 </TableCell>
                 <TableCell
+                  className="py-2 px-4 text-center"
                   style={{ textAlign: "center", cursor: "pointer" }}>
-                  <div className="flex items-center ">
-                      Country Name
+                  <div className="text-center ">
+                          Country Name
                       <button className="ml-2 focus:outline-none" onClick={() => handleSort('countryname')}>
                         {sortOrder === 'asc' ? '↓' : '↑'}
                       </button>
                     </div>
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>Actions</TableCell>
+                <TableCell style={{ textAlign: "center" }} className="py-2 px-4 text-center">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -505,18 +537,33 @@ const State = () => {
                       {state.countryname}
                     </TableCell>
                     <TableCell style={{ textAlign: "center" }}>
-                      <button
-                        className="bg-blue-500 m-1 text-white px-3 py-1 rounded hover:bg-blue-700 transition-all duration-300 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
-                        onClick={() => handleModal(state, "edit", state.countryname)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(state.stateid)}
-                        className="bg-red-500 text-white m-1 px-3 py-1 rounded hover:bg-red-700 transition-all duration-300 focus:outline-none focus:shadow-outline-red active:bg-red-800"
-                      >
-                        Delete
-                      </button>
+                     
+                      <div className='align-baseline flex justify-end'>
+                        <button
+                          onClick={() =>handleModal(state, "edit", state.countryname)}
+                          className=" m-1 text-white  rounded"
+                        >
+                        <img
+                            src="Asset\icons8-edit-50.png" // Replace with the actual path to your delete icon image
+                            alt="Edit Icon"
+                            className=" " // Adjust the margin as needed
+                          />
+                          
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleDelete(state.stateid)
+                          }
+                          className=" text-white m-1 px-3 py-1 rounded transition-all duration-300 focus:outline-none focus:shadow-outline-red active:bg-red-800"
+                        >
+                          <img
+                            src="Asset\icons8-delete-60.png" // Replace with the actual path to your delete icon image
+                            alt="Delete Icon"
+                            className="" // Adjust the margin as needed
+                          />
+                          
+                        </button>
+                        </div>
                     </TableCell>
                   </TableRow>
                 ))

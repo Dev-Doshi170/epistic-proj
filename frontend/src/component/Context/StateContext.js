@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useLocation  } from 'react-router-dom';
+import { json, useLocation  } from 'react-router-dom';
 import { toast , ToastContainer  } from 'react-toastify';
 import { useDispatch } from 'react-redux';
-import { setData,setCurrentPage,  setRowsPerPage, setTotalPages } from '../../Redux/stateSlice';
+import { setData,setCurrentPage,  setRowsPerPage, setTotalPages,setUpdatedData,addData } from '../../Redux/stateSlice';
 import {setCountryData} from '../../Redux/dropcountry'
 const StateContext = createContext();
 
@@ -11,7 +11,8 @@ export const StateProvider = ({ children }) => {
 
    
     
-    const fetchstate = async (page, limit) => {
+    const fetchstate = async (page, limit,order,column) => {
+      
       try {
         const response = await fetch('http://localhost:8000/state/getstatedata', {
           method: 'POST',
@@ -21,6 +22,8 @@ export const StateProvider = ({ children }) => {
           body: JSON.stringify({
             page,
             limit,
+            order,
+            column,
           }),
         });
 
@@ -62,18 +65,20 @@ export const StateProvider = ({ children }) => {
           body: JSON.stringify({ stateid, statename, countryid }),
         });
     
+        const latestdata = await response.json();
+
+        if(latestdata.error){
+          toast.error( `State with the same name already exists in the specified `)
+          return latestdata.error
+        }
+
         if (response.ok) {
-          //console.log("Updated successfully");
-          toast.success(`${statename} updated successfully`)
-          // Check if the content type is JSON before trying to parse
-          const contentType = response.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
-            const data = await response.json();
-            // Continue processing the parsed data if needed
-            console.log("Data:", data);
-          }
+           // Await the Promise here
+          const { updatedstate } = latestdata;
+          dispatch(setUpdatedData(updatedstate));
+          toast.success(`${statename} updated successfully`);
         } else {
-          toast.error(` error updating ${statename}`)
+          toast.error(`Error updating ${statename}`);
           console.error(`HTTP error! Status: ${response.status}`);
         }
       } catch (error) {
@@ -81,53 +86,50 @@ export const StateProvider = ({ children }) => {
       }
     };
     
-    
-    const addState = async (statename, countryid) => {
 
-
+    const addState = async (statename, countryid, page, limit) => {
+      //console.log(statename, countryid);
       try {
-        const duplicateCheckResponse = await fetch('http://localhost:8000/state/checkDuplicateState', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            stateName: statename,
-          }),
-        });
-    
-        const duplicateCheckResult = await duplicateCheckResponse.json();
-    
-        if (duplicateCheckResult.isDuplicate) {
-          // Show a toast or handle duplicate city name
-          toast.error('State with the same name already exists');
-          return null; // Return null to indicate failure due to duplicate city name
-        }
-
         const response = await fetch('http://localhost:8000/state/addstate', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ statename, countryid }),
+          body: JSON.stringify({ statename, 
+            countryid,
+            page,
+            limit,
+             }),
         });
-  
+        
+        const result = await response.json();
+
+        if(result.error){
+          toast.error( `State with the same name already exists in the specified `)
+          return result.error
+        }
+
+        const {data,pagination} = result;
+        console.log("hii",data,pagination)
         if (response.ok) {
-          const data = await response.json();
+       
+            
+            dispatch(addData(result));
           // Update state or handle the response as needed
-          toast.success(`${statename} inserted successfully`)
+          toast.success(`${statename} inserted successfully`);
         } else {
           console.error('Failed to add state:', response.status);
-          toast.error(`error inserting ${statename}`)
+          toast.error(`Error inserting ${statename}`);
         }
       } catch (error) {
-        toast.error(`${statename} already exists`)
+        toast.error(`Internal server`);
         console.error('Error adding state:', error.message);
         // Handle the error
       }
     };
 
-    const deleteState = async (stateId) => {
+
+    const deleteState = async (stateId, page, limit) => {
       try {
         // Make your API call to delete the state
         const response = await fetch('http://localhost:8000/state/deletestate', {
@@ -135,16 +137,28 @@ export const StateProvider = ({ children }) => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ stateid: stateId }),
+          body: JSON.stringify({ stateid: stateId, page, limit }),
         });
-  
+    
         if (response.ok) {
-          toast.success(`removed successfully`)
+          const result = await response.json();
+          console.log('Delete state result:', result);
+    
+          if (result.error) {
+            // Handle the error message here
+            toast.error(result.error);
+          } else {
+            dispatch(setData(result));
+            if (result.message) {
+              toast.success(result.message);
+            } 
+          }
         } else {
-          toast.error(`error removing data`)
+          toast.error('Error removing state');
           console.error('Failed to delete state');
         }
       } catch (error) {
+        toast.error('Error deleting state');
         console.error('Error deleting state:', error);
       }
     };

@@ -22,26 +22,32 @@ const Modal = ({ onClose, onSaveCountry, country, Mode, onEditCountry }) => {
     const errors = {};
 
     // Validation for country name
-    if (formData.countryname.length > 10) {
-      errors.countryname = 'Maximum 10 characters allowed';
+    if (!formData.countryname) {
+      errors.countryname = 'Country name cannot be empty';
+    } else if (formData.countryname.length > 50) {
+      errors.countryname = 'Maximum 50 characters allowed';
     } else if (!/^[a-zA-Z]+$/.test(formData.countryname)) {
       errors.countryname = 'Enter only alphabets';
     }
 
-    // Validation for country code
-    if (formData.countrycode.length > 4) {
-      errors.countrycode = 'Maximum 4 characters allowed';
+    if (!formData.countrycode) {
+      errors.countrycode = 'Country code cannot be empty';
     } else if (!/^[a-zA-Z]+$/.test(formData.countrycode)) {
       errors.countrycode = 'Enter only alphabets';
     }
-
+    else if (formData.countrycode.length > 4) {
+      errors.countrycode = 'Maximum 2 characters allowed';
+    } 
+    
     // Validation for phone code
-    if (formData.phonecode.length > 3) {
-      errors.phonecode = 'Maximum 3 characters allowed';
+    if (!formData.phonecode) {
+      errors.phonecode = 'Phone code cannot be empty';
     } else if (!/^\d+$/.test(formData.phonecode)) {
       errors.phonecode = 'Enter only numbers';
     }
-
+    else if (formData.phonecode.length > 4) {
+      errors.phonecode = 'Maximum 4 characters allowed';
+    } 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0; // Return true if there are no errors
   };
@@ -82,16 +88,16 @@ const Modal = ({ onClose, onSaveCountry, country, Mode, onEditCountry }) => {
   };
 
   return (
-    <div className='fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm justify-center align-middle flex'>
+    <div className=' fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm justify-center align-middle flex'>
       <div className='mt-10 flex flex-col gap-5 text-white w-96 h-96'>
         <button onClick={() => onClose()} className='place-self-end'>
           <X size={30} />
         </button>
-        <div className='bg-slate-600 flex items-center justify-center p-10 rounded-md'>
+        <div className='bg-white flex items-center justify-center p-10 rounded-md '>
           <form className='flex flex-col w-80 gap-4 '>
-            <h3 className=''>{Mode === 'edit' ? 'Update country' : 'Add country'}</h3>
+            <h3 className='text-black font-semibold'>{Mode === 'edit' ? 'Update country' : 'Add country'}</h3>
             <input
-              className='rounded p-2 text-black'
+              className='p-2 text-black border-2 border-black  rounded-md'
               name='countryname'
               value={formData.countryname}
               onChange={handleChange}
@@ -101,7 +107,7 @@ const Modal = ({ onClose, onSaveCountry, country, Mode, onEditCountry }) => {
               <small className='text-red-500'>{validationErrors.countryname}</small>
             )}
             <input
-              className='rounded p-2 text-black'
+              className=' p-2 text-black border-2 border-black  rounded-md'
               name='countrycode'
               value={formData.countrycode}
               onChange={handleChange}
@@ -111,7 +117,7 @@ const Modal = ({ onClose, onSaveCountry, country, Mode, onEditCountry }) => {
               <small className='text-red-500'>{validationErrors.countrycode}</small>
             )}
             <input
-              className='rounded p-2 text-black'
+              className=' p-2 text-black border-2 border-black  rounded-md'
               name='phonecode'
               value={formData.phonecode}
               onChange={handleChange}
@@ -121,10 +127,10 @@ const Modal = ({ onClose, onSaveCountry, country, Mode, onEditCountry }) => {
               <small className='text-red-500'>{validationErrors.phonecode}</small>
             )}
             <div className='flex justify-between'>
-              <button type='button' onClick={handleSave}>
+              <button className='text-black ' type='button' onClick={handleSave}>
                 {Mode === 'edit' ? 'Update' : 'Save'}
               </button>
-              <button type='button' onClick={() => handleCancel()}>
+              <button className='text-black ' type='button' onClick={() => handleCancel()}>
                 Cancel
               </button>
             </div>

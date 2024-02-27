@@ -21,6 +21,7 @@ const stateSlice = createSlice({
       state.data = data;
       state.pagination.totalPages = pagination.totalPages;
       state.pagination.count = pagination.totalCount;
+      state.pagination.currentPage = pagination.currentPage;
     },
     setCurrentPage: (state, action) => {
       state.pagination.currentPage = action.payload;
@@ -31,8 +32,24 @@ const stateSlice = createSlice({
     setTotalPages: (state, action) => {
       state.pagination.totalPages = action.payload;
     },
+    setUpdatedData:(state,action) =>{
+      const updatedstate = action.payload
+      const stateid = updatedstate.stateid
+      const stateindex = state.data.findIndex(state => state.stateid === stateid);
+      if (stateindex != -1){
+        state.data[stateindex]= updatedstate;
+      }
+    },
+    addData: (state, action) => {
+      const { data, pagination } = action.payload;
+      state.data = data;
+      state.pagination.totalPages = pagination.totalPages;
+      state.pagination.count = pagination.totalCount;
+      state.pagination.currentPage=pagination.currentPage;
+    },
+    
   },
 });
 
-export const { setData, totalPages, setCurrentPage, setCount, setRowsPerPage, setTotalPages } = stateSlice.actions;
+export const { addData,setData, totalPages, setCurrentPage, setCount, setRowsPerPage, setTotalPages,setUpdatedData } = stateSlice.actions;
 export default stateSlice.reducer;
