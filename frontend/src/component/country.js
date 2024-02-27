@@ -219,10 +219,10 @@ const handleLastPageButtonClick = () => {
     await sort(currentPage, rowsPerPage, sortOrder, 'country', columnName);
   };
 
- useEffect(()=>{
-  console.log("use")
-  fetchDataFromApi(page,rowsPerPage,sortOrder,sortColumn)
- },[page,rowsPerPage,sortOrder,sortColumn])
+  useEffect(()=>{
+    console.log("use")
+    fetchDataFromApi(page,rowsPerPage,sortOrder,sortColumn)
+   },[page,rowsPerPage,sortOrder,sortColumn])
 
   return (
     <div className="w-[100%] flex flex-col items-center justify-between gap-4">
