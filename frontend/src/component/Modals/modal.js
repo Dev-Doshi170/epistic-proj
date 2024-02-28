@@ -35,7 +35,7 @@ const Modal = ({ onClose, onSaveCountry, country, Mode, onEditCountry }) => {
     } else if (!/^[a-zA-Z]+$/.test(formData.countrycode)) {
       errors.countrycode = 'Enter only alphabets';
     }
-    else if (formData.countrycode.length > 4) {
+    else if (formData.countrycode.length > 2) {
       errors.countrycode = 'Maximum 2 characters allowed';
     } 
     

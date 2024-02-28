@@ -344,20 +344,20 @@ const Modal = ({ mode, state }) => {
         <button onClick={handleCancel} className="place-self-end">
           <X size={30} />
         </button>
-        <div className="bg-slate-600 flex items-center justify-center p-10 rounded-md">
+        <div className="bg-white flex items-center justify-center p-10 rounded-md">
           <form className="flex flex-col w-80 gap-4 ">
-            <h3 className="">
+            <h3 className="text-black">
               {mode === "edit" ? "Update state" : "Add state"}
             </h3>
             <div className="relative">
-              <label htmlFor="countryId">Country</label>
+              
               <div className="relative">
                 <select
                   id="countryId"
                   name="countryId"
                   value={countryname}
                   onChange={handleChange}
-                  className="rounded p-2 text-black bg-white w-80 "
+                  className="rounded p-2 text-black bg-white w-80 border-[1px] border-gray-400 h-[50px]"
                   style={{ maxHeight: '100px', overflowY: 'auto' }}
                 >
                 
@@ -381,7 +381,7 @@ const Modal = ({ mode, state }) => {
               )}
             </div>
             <input
-              className="rounded p-2 text-black"
+              className="rounded p-2 text-black border-[1px] border-gray-400  h-[50px]"
               name="stateName"
               value={statename}
               onChange={handleChange}
@@ -390,7 +390,7 @@ const Modal = ({ mode, state }) => {
             {formErrors.stateName && (
               <span className="text-red-500">{formErrors.stateName}</span>
             )}
-            <div className="flex justify-between">
+            <div className="flex justify-between text-black">
               <button type="button" onClick={handleSave}>
                 {mode === "edit" ? "Update" : "Save"}
               </button>

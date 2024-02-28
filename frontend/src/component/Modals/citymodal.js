@@ -176,6 +176,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { closeModal, setSelectedState, setSelectedCountry, setCityName, setSelectedStateId, setSelectedCountryId } from '../../Redux/modalCitySlice';
 import { useStateContext } from '../Context/StateContext';
 import { useCityContext } from '../Context/CityContext';
+import { Select, MenuItem, InputLabel, FormControl, TextField } from '@mui/material';
 
 const CityModal = ({ city }) => {
   const dispatch = useDispatch();
@@ -290,71 +291,98 @@ const CityModal = ({ city }) => {
 
   return (
     <div className='fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm justify-center align-middle flex'>
-      <div className='mt-10 flex flex-col gap-5 text-white w-96 h-96'>
+      <div className='mt-10 flex flex-col gap-5  w-96 h-96'>
         <button onClick={handleCancel} className='place-self-end'>
           <X size={30} />
         </button>
-        <div className='bg-slate-600 flex items-center justify-center p-10 rounded-md'>
-          <form className='flex flex-col w-80 gap-4 '>
-            <h3 className=''>{mode === 'edit' ? 'Update City' : 'Add City'}</h3>
-            <div className='relative'>
-              <label htmlFor='stateId'>Country</label>
-              <div className='relative flex flex-col gap-2'>
-                <select
-                  id='countryId'
-                  name='country'
-                  value={selectedCountry}
-                  onChange={handleChange}
-                  className='rounded p-2 text-black bg-white'
-                >
-                  <option className='text-black' value=''>
-                    {'Select country'}
-                  </option>
-                  {countryData.map((country) => (
-                    <option className='text-black' key={country.countryid} value={country.countryname}>
-                      {country.countryname}
-                    </option>
-                  ))}
-                </select>
+        <div className='bg-white flex items-center justify-center p-10 rounded-md'>
+          <form className='flex flex-col w-80  '>
+            <h3 className='m-2'>{mode === 'edit' ? 'Update City' : 'Add City'}</h3>
+            <div className='relative mb-5'>
+              
+              <div className='relative flex flex-col  '>
+              
+              
+              <TextField
+                select
+                labelId="countryId-label"
+                id="countryId"
+                name="country"
+                value={selectedCountry}
+                onChange={handleChange}
+                label="Select Country"
+                className='text-black bg-white border-2 border-black'
+                SelectProps={{
+                  MenuProps: {
+                    PaperProps: {
+                      style: {
+                        maxHeight: 130,
+                        width: 250,
+                        
+                      },
+                    },
+                  },
+                }}
+              >
+              
+                {countryData.map((country) => (
+                  <MenuItem key={country.countryid} value={country.countryname}>
+                    {country.countryname}
+                  </MenuItem>
+                ))}
+              </TextField>
+            
                 <div className='text-red-500'>{validationMessages.country}</div>
               </div>
             </div>
-            <div className='relative'>
-              <label htmlFor='stateId'>State</label>
+            <div className='relative mb-4'>
+              
               <div className='relative flex flex-col gap-2'>
-                <select
-                  id='stateId'
-                  name='state'
-                  onChange={handleChange}
-                  value={selectedState}
-                  className='rounded p-2 text-black bg-white'
-                  disabled={!selectedCountry && mode === 'add'}
-                >
-                  <option className='text-black' value=''>
-                    {'Select State'}
-                  </option>
-                  {stateData.map((state) => (
-                    <option className='text-black' key={state.stateid} value={state.statename}>
-                      {state.statename}
-                    </option>
-                  ))}
-                </select>
+              <TextField
+              select
+              
+              labelId="stateId-label"
+              id="stateId"
+              name="state"
+              value={selectedState}
+              onChange={handleChange}
+              label="Select State"
+              className='rounded p-2 text-black bg-white '
+              disabled={!selectedCountry && mode === 'add'}
+              SelectProps={{
+                MenuProps: {
+                  PaperProps: {
+                    style: {
+                      maxHeight: 130,
+                      width: 250,
+                    },
+                  },
+                },
+              }}
+            >
+              
+              {stateData.map((state) => (
+                <MenuItem key={state.stateid} value={state.statename}>
+                  {state.statename}
+                </MenuItem>
+              ))}
+            </TextField>
                 <div className='text-red-500'>{validationMessages.state}</div>
               </div>
             </div>
-            <input
-              className='rounded p-2 text-black'
+            <TextField
+              className='rounded p-2 text-black '
               name='cityname'
               value={cityname}
               onChange={handleChange}
               placeholder='Enter city name'
             />
             <div className='text-red-500'>{validationMessages.cityname}</div>
-            <div className='flex justify-between'>
-              <button type='button' onClick={handleSave}>
+            <div className='flex justify-between m-2'>
+              <button className='text-black' type='button' onClick={handleSave}>
                 {mode === 'edit' ? 'Update' : 'Save'}
               </button>
-              <button type='button' onClick={handleCancel}>
+              <button className='text-black' type='button' onClick={handleCancel}>
                 Cancel
               </button>
             </div>

@@ -239,7 +239,7 @@ export const CityProvider = ({ children }) => {
             dispatch(handleUpdatedCity(updatedcity));
 
             // Show a success toast if needed
-            toast.success(`hii ${cityname} updated successfully`);
+            toast.success(` ${cityname} updated successfully`);
         } else {
             console.error('Error updating city:', updateResult.error);
 

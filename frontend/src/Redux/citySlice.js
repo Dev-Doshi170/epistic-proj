@@ -88,6 +88,7 @@ const citySlice = createSlice({
           state.data[cityIndex] = updateResult;
         }
       },
+      
   },
 });
 

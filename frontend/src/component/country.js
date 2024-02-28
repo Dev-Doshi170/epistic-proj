@@ -249,7 +249,7 @@ const handleLastPageButtonClick = () => {
         <div className="flex-grow w-[100%] min-h-[calc(100vh-24rem)] overflow-y-visible relative  rounded-xl  ">
           <TableContainer
             component={Paper}
-            style={{ maxHeight: "505px", overflowY: "auto",boxShadow: "50px 50px 50px -12px rgba(0, 0, 0, 0.25)" }}
+            style={{ maxHeight: "505px", overflowY: "auto",boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
           >
             <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
               <TableHead
