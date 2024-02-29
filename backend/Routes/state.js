@@ -119,7 +119,7 @@ router.post('/getstatedata', async (req, res) => {
 
   router.delete('/deletestate', async (req, res) => {
     try {
-      const { stateid, page, limit } = req.body;
+      const { stateid, page = 1, limit = 5 } = req.body;
       console.log('Deleting state:', stateid, 'Page:', page, 'Limit:', limit);
   
       // Check if there are existing cities for the state
@@ -172,6 +172,7 @@ router.post('/addstate', async (req, res) => {
   try {
     const { statename, countryid, page, limit } = req.body;
 
+
     // Check if a state with the same name and isdeleted = true exists
 
     const duplicateState = await client.query(
@@ -192,20 +193,37 @@ router.post('/addstate', async (req, res) => {
     if (existingState.rows.length > 0) {
       // Update the existing state with new countryid
       const updateResult = await client.query(
-        'UPDATE state SET countryid = $1, isdeleted = false WHERE statename = $2 RETURNING *',
+        'UPDATE state SET countryid = $1, isdeleted = false WHERE LOWER(statename) = LOWER($2) ',
         [countryid, statename]
       );
 
-      const updatedState = updateResult.rows[0];
+      const totalCountQuery = await client.query('SELECT COUNT(*) FROM state WHERE isdeleted = false');
+      const totalCount = totalCountQuery.rows[0].count;
+
+      let query =
+        'SELECT state.*, country.countryname FROM state JOIN country ON state.countryid = country.countryid WHERE state.isdeleted = false LIMIT $1 OFFSET $2';
+
+      // Execute the query
+      const result = await client.query(query, [limit, (page - 1) * limit]);
 
       res.status(200).json({
-        data: [updatedState], // Return an array with the updated state
+        data: result.rows,
         pagination: {
-          totalCount: existingState.rows.length, // Update the total count accordingly
-          totalPages: 1,
-          currentPage: 1,
+          totalCount,
+          totalPages: Math.ceil(totalCount / limit),
+          currentPage: page,
         },
       });
+      // const updatedState = updateResult.rows[0];
+
+      // res.status(200).json({
+      //   data: updatedState, // Return an array with the updated state
+      //   pagination: {
+      //     totalCount: existingState.rows.length, // Update the total count accordingly
+      //     totalPages: 1,
+      //     currentPage: 1,
+      //   },
+      // });
     } else {
       // Insert a new state
       const insertResult = await client.query(

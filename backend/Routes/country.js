@@ -67,9 +67,36 @@ router.post('/addcountry', async (req, res) => {
 
           if (existingCountry.isdeleted ) {
             console.log(existingCountry.isdeleted)
-              const updateQuery = 'UPDATE country SET isdeleted = false WHERE countryname = $1 RETURNING *';
+              const updateQuery = 'UPDATE country SET isdeleted = false WHERE countryname = $1 ';
               const updateResult = await client.query(updateQuery, [existingCountry.countryname]);
-              return res.status(200).json({ status: 'success', data: updateResult.rows });
+              const totalCountQuery = await client.query('SELECT COUNT(*) FROM country WHERE isdeleted = false');
+    const totalCount = totalCountQuery.rows[0].count;
+
+    // Second query to get paginated data
+    let query;
+    let params = [limit, (page - 1) * limit];
+
+    query = 'SELECT * FROM country WHERE isdeleted = false'
+
+    if (order && column) {
+      // If order and column are provided, add sorting to the query
+      query += ` ORDER BY ${column} ${order === 'asc' ? 'ASC ' : 'DESC'} `;
+    }
+
+    query += ' LIMIT $1 OFFSET $2 '
+    // Execute the query
+    const result = await client.query(query, params);
+
+    res.status(200).json({
+      finalStatus: 'success',
+      
+      data: result.rows,
+      pagination: {
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+      },
+    });
           } else {
               // Country is deleted, update and return
               return res.status(409).json({ message: 'Country already exists.' });
@@ -137,8 +164,6 @@ router.put('/countryupdate',async(req,res)=>{
     res.status(200).json("updated");
     
   })
-  
-  
 
 router.delete('/countrydelete/:id', async (req, res) => {
   try {

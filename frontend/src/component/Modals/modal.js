@@ -97,7 +97,7 @@ const Modal = ({ onClose, onSaveCountry, country, Mode, onEditCountry }) => {
           <form className='flex flex-col w-80 gap-4 '>
             <h3 className='text-black font-semibold'>{Mode === 'edit' ? 'Update country' : 'Add country'}</h3>
             <input
-              className='p-2 text-black border-2 border-black  rounded-md'
+              className='p-2 text-black border-[1px] border-gray-400  rounded-md'
               name='countryname'
               value={formData.countryname}
               onChange={handleChange}
@@ -107,7 +107,7 @@ const Modal = ({ onClose, onSaveCountry, country, Mode, onEditCountry }) => {
               <small className='text-red-500'>{validationErrors.countryname}</small>
             )}
             <input
-              className=' p-2 text-black border-2 border-black  rounded-md'
+              className=' p-2 text-black border-[1px] border-gray-400  rounded-md'
               name='countrycode'
               value={formData.countrycode}
               onChange={handleChange}
@@ -117,7 +117,7 @@ const Modal = ({ onClose, onSaveCountry, country, Mode, onEditCountry }) => {
               <small className='text-red-500'>{validationErrors.countrycode}</small>
             )}
             <input
-              className=' p-2 text-black border-2 border-black  rounded-md'
+              className=' p-2 text-black border-[1px] border-gray-400  rounded-md'
               name='phonecode'
               value={formData.phonecode}
               onChange={handleChange}

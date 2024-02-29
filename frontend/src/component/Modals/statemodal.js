@@ -241,38 +241,6 @@ const Modal = ({ mode, state }) => {
     return isValid;
   };
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   console.log(name,value)
-  //   // Reset error message for the changed field
-  //   setFormErrors((prevErrors) => ({
-  //     ...prevErrors,
-  //     [name]: "",
-  //   }));
-
-  //   if (mode === "edit") {
-  //     if (name === "countryId") {
-  //       const selectedCountryObject = countryData.find(
-  //         (country) => country.countryname === value
-  //       );
-  //       if (selectedCountryObject) {
-  //         const selectedCountryId = selectedCountryObject.countryid;
-  //         dispatch(setCountryId({ countryid: selectedCountryId }));
-  //         dispatch(setCountryname(value));
-  //       }
-  //     } else if (name === "stateName") {
-  //       dispatch(setStatename({ statename: value }));
-  //     }
-  //   } else if (mode === "add") {
-  //     if (name === "countryId") {
-  //       dispatch(setCountryId({ countryid: value }));
-  //       dispatch(setCountryname(value));
-  //     } else if (name === "stateName") {
-  //       dispatch(setStatename({ statename: value }));
-  //     }
-  //   }
-  // };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
   

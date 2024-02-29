@@ -204,7 +204,7 @@ router.post('/addcity', async (req, res) => {
     if (existingCity.rows.length > 0) {
       // Update the existing city with new countryid and stateid
       const updateResult = await client.query(
-        'UPDATE city SET stateid = $1, countryid = $2, isdeleted = false WHERE cityname = $3 RETURNING *',
+        'UPDATE city SET stateid = $1, countryid = $2, isdeleted = false WHERE LOWER(cityname) = LOWER($3) RETURNING *',
         [stateId, countryId, city]
       );
 
