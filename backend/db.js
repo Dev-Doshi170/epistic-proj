@@ -15,4 +15,5 @@ const client = new Pool({
     })
 
    module.exports = client;
-   
+
+dont show the database credenetials direct in github
