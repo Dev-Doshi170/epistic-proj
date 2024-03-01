@@ -71,16 +71,17 @@ router.use(express.json());
 router.put('/cityupdate', async (req, res) => {
   try {
     const { cityname, cityid, stateid, countryid } = req.body;
-
+    
     // Update city with cityname, stateid, and countryid
     const duplicateCityCheck = await client.query(
-      'SELECT COUNT(*) FROM city WHERE LOWER(cityname) = LOWER($1) AND stateid = $2 AND isdeleted = false',
-      [cityname.toLowerCase(), stateid]
+      'SELECT COUNT(*) FROM city WHERE LOWER(cityname) = LOWER($1) and stateid = $2 AND isdeleted = false',
+      [cityname.toLowerCase(),stateid]
     );
+      console.log("hii",duplicateCityCheck.rows[0])
 
-    if (duplicateCityCheck.rows[0].count > 0) {
+    if (duplicateCityCheck.rows[0].stateid === stateid && duplicateCityCheck.rows[0].cityname === cityname) {
       // Duplicate city found in the same state
-      return res.status(400).json({ error: 'City with the same name already exists in the specified state' });
+      return res.status(400).json({ error: 'City with the same name in same state already exists in the specified state' });
     }
 
     const result = await client.query('UPDATE city SET cityname = $1, stateid = $2, countryid = $3 WHERE cityid = $4 RETURNING *',
@@ -204,7 +205,7 @@ router.post('/addcity', async (req, res) => {
     if (existingCity.rows.length > 0) {
       // Update the existing city with new countryid and stateid
       const updateResult = await client.query(
-        'UPDATE city SET stateid = $1, countryid = $2, isdeleted = false WHERE LOWER(cityname) = LOWER($3) RETURNING *',
+        'UPDATE city SET stateid = $1, countryid = $2,cityname = $3, isdeleted = false WHERE LOWER(cityname) = LOWER($3) RETURNING *',
         [stateId, countryId, city]
       );
 

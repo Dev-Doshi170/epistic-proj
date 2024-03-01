@@ -67,8 +67,8 @@ router.post('/addcountry', async (req, res) => {
 
           if (existingCountry.isdeleted ) {
             console.log(existingCountry.isdeleted)
-              const updateQuery = 'UPDATE country SET isdeleted = false WHERE countryname = $1 ';
-              const updateResult = await client.query(updateQuery, [existingCountry.countryname]);
+              const updateQuery = 'UPDATE country SET isdeleted = false , countryname = $1,countrycode = $2,phonecode = $3  WHERE countryname = $4 ';
+              const updateResult = await client.query(updateQuery, [countryName,countryCode, phoneCode,existingCountry.countryname]);
               const totalCountQuery = await client.query('SELECT COUNT(*) FROM country WHERE isdeleted = false');
     const totalCount = totalCountQuery.rows[0].count;
 
@@ -147,12 +147,13 @@ router.put('/countryupdate',async(req,res)=>{
   const {countryname, countrycode, phonecode, countryid, page, limit, order, column} = req.body;
 
   const duplicateCountry = await client.query(
-    'SELECT COUNT(*) FROM country WHERE LOWER(countryname) = LOWER($1) AND isdeleted = false',
+    'SELECT * FROM country WHERE LOWER(countryname) = LOWER($1) AND isdeleted = false',
     [countryname.toLowerCase()]
   );
 
-  if (duplicateCountry.rows[0].count > 0) {
+  if (duplicateCountry.rows[0].countryname === countryname && duplicateCountry.rows[0].countrycode === countrycode && duplicateCountry.rows[0].phonecode === phonecode ) {
     // Duplicate city found in the same state
+    console.log("hii",duplicateCountry.rows[0])
     return res.status(400).json({ error: 'Country with the same name already exists ' });
   }
 

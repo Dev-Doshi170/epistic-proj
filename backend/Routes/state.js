@@ -193,8 +193,8 @@ router.post('/addstate', async (req, res) => {
     if (existingState.rows.length > 0) {
       // Update the existing state with new countryid
       const updateResult = await client.query(
-        'UPDATE state SET countryid = $1, isdeleted = false WHERE LOWER(statename) = LOWER($2) ',
-        [countryid, statename]
+        'UPDATE state SET countryid = $1,statename = $2, isdeleted = false WHERE LOWER(statename) = LOWER($3) ',
+        [countryid,statename, statename]
       );
 
       const totalCountQuery = await client.query('SELECT COUNT(*) FROM state WHERE isdeleted = false');
@@ -259,14 +259,15 @@ router.post('/addstate', async (req, res) => {
     router.put('/stateupdate', async (req, res) => {
       try {
           const { stateid, statename, countryid } = req.body;
-  
+        
           const duplicateState = await client.query(
-            'SELECT COUNT(*) FROM state WHERE LOWER(statename) = LOWER($1) AND countryid = $2 AND isdeleted = false',
-            [statename, countryid]
+            'SELECT * FROM state WHERE LOWER(statename) = LOWER($1) AND isdeleted = false',
+            [statename]
           );
-      
-          if (duplicateState.rows[0].count > 0) {
+            console.log(duplicateState.rows[0])
+          if (duplicateState.rows[0].countryid === countryid && duplicateState.rows[0].statename === statename) {
             // Duplicate city found in the same state
+            console.log(duplicateState.rows[0])
             return res.status(400).json({ error: 'State with the same name already exists in the specified State' });
           }
 

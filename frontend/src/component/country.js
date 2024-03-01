@@ -157,7 +157,7 @@ const handleLastPageButtonClick = () => {
   };
 
   const handleEditCountry = async (editedData) => {
-    console.log(editedData)
+   
     try {
       // Find the index of the country with the matching countryid in the existing countryData
       const indexToUpdate = countryData.findIndex(
