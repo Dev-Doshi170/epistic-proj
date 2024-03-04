@@ -22,7 +22,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className={`flex bg-slate-700 flex-col w-[15%] h-screen p-4 `}>
+    <div className={`flex bg-slate-700 flex-col  h-screen p-4 `}>
       <div className="">
         {/* Hamburger Icon */}
         
