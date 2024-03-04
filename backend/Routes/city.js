@@ -258,8 +258,9 @@ router.post('/addcity', async (req, res) => {
 
 router.delete('/deletecity', async (req, res) => {
   try {
-    const { cityid,page, limit, sort ,column } = req.body;
-    console.log(cityid)
+    let { cityid,page , limit , sort ,column } = req.body;
+    page = Math.max(page, 1);
+    console.log(page , limit)
     let Deleteresult = await client.query('UPDATE city SET isdeleted = true WHERE cityid = $1', [cityid]);
 
     const totalCountQuery = await client.query('SELECT COUNT(*) FROM city WHERE isdeleted = false');

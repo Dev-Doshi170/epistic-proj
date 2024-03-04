@@ -106,9 +106,10 @@ const City = () => {
 
   const handleDeleteConfirmed = async() => {
       setShowConfirmationDialog(false);
-      await deleteCity(deleteId,deleteName,pagination.currentPage,pagination.rowsPerPage,sort,sortColumn);
+      await deleteCity(deleteId,deleteName,pagination.currentPage,pagination.rowsPerPage);
       
       setIsSearching('');
+      console.log('delete')
   };
 
   const handleDeleteCancelled = () => {

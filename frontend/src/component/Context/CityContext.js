@@ -256,8 +256,8 @@ export const CityProvider = ({ children }) => {
   
   
 
-  const deleteCity = async (cityid ,cityName,page,limit,sort,column) => {
-    console.log("context",cityid)
+  const deleteCity = async (cityid ,cityName,page = 1,limit = 5,sort,column) => {
+   
   try {
     const url = 'http://localhost:8000/city/deletecity';  // Replace with your actual API URL
     const response = await fetch(url, {
@@ -272,7 +272,8 @@ export const CityProvider = ({ children }) => {
 
     if (response.ok) {
       const { data, pagination } = result;
-        dispatch(setCityData({data , pagination}))
+      console.log(data , pagination)
+         dispatch(setCityData({data , pagination}))
       toast.success(`${cityName} deleted successfully`)
       console.log('City deleted successfully:', result.message);
     } else {

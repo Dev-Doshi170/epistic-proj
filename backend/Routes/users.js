@@ -6,53 +6,6 @@ const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
 
-// router.post('/login',[
-//     body('username').notEmpty(),
-//     body('password').notEmpty(),
-// ],async(req,res)=>{
-//     const JWT_SECRET = "secretkey";
-//     const { username, password } = req.body;
-
-//   try {
-
-//     const userResult = await client.query('SELECT * FROM users WHERE username = $1', [username]);
-
-//     if (userResult.rows.length === 0) {
-//       return res.status(400).json({ success: false, message: 'User not found' });
-//     }
-
-//     const user = userResult.rows[0];
-
-//     // Compare entered password with stored hashed password
-//     const passwordMatch = await bcrypt.compare(password, user.password);
-
-//     if (!passwordMatch) {
-//       return res.status(401).json({ success: false, message: 'Invalid password' });
-//     }
-
-//     const data = {
-//       users: {
-//         name: username,
-//         password: password,
-//         expiresIn: '30s', // Change this to 30 seconds
-//       },
-//     };
-  
-//   const authToken = jwt.sign(data, JWT_SECRET);
-                  
-//   //res.status(200).json({message: "User Login SuccessFully", result: user , authToken})
-//   res.status(200).json({ message: "User Login Successfully", result: user ,authToken });
-
-//   } catch (error) {
-//     console.error('Error executing query:', error);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-
-// })
-
-
-// 
-
 
 router.post('/login', [
   body('username').notEmpty(),
