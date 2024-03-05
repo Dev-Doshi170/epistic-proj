@@ -16,7 +16,8 @@ const Sidebar = () => {
     // Remove authToken from local storage
     localStorage.removeItem('authToken');
     localStorage.removeItem('tokenTimestamp');
-
+    localStorage.removeItem('username');
+    localStorage.removeItem('password');
     // Redirect to the login page
     navigate('/');
   };
@@ -32,18 +33,18 @@ const Sidebar = () => {
         <div className='my-5  flex gap-2 items-center'>
         {location.pathname === "/country" ? (
           <div>
-            <img src='Asset\arrow.png' alt="Black Arrow" />
+            <img src='Asset\green arrow.png' alt="Black Arrow" />
             <img src='Asset\white arrow.png' alt="White Arrow" className="hidden" />
           </div>
         ) : (
           <div>
-            <img src='Asset\blackarrow.png' alt="Black Arrow" className="hidden" />
+            <img src='Asset\green arrow.png' alt="Black Arrow" className="hidden" />
             <img src='Asset\white arrow.png' alt="White Arrow" />
           </div>
         )}
           <NavLink
             className={`relative text-[26px] font-semibold ${
-              location.pathname === "/country" ? "text-black" : "text-white"
+              location.pathname === "/country" ? "text-lime-400" : "text-white"
             } hover:font-bold `}
             to="/country"
           >
@@ -54,18 +55,18 @@ const Sidebar = () => {
         <div className='my-5 flex gap-2 items-center'>
           {location.pathname === "/state" ? (
             <div>
-              <img src='Asset\arrow.png' alt="Black Arrow" />
+              <img src='Asset\green arrow.png' alt="Black Arrow" />
               <img src='Asset\white arrow.png' alt="White Arrow" className="hidden" />
             </div>
           ) : (
             <div>
-              <img src='Asset\blackarrow.png' alt="Black Arrow" className="hidden" />
+              <img src='Asset\green arrow.png' alt="Black Arrow" className="hidden" />
               <img src='Asset\white arrow.png' alt="White Arrow" />
             </div>
           )}
           <NavLink
             className={`relative text-[26px] font-semibold ${
-              location.pathname === "/state" ? "text-black" : "text-white"
+              location.pathname === "/state" ? "text-lime-400" : "text-white"
             } hover:font-bold transition-colors duration-300`}
             to="/state"
           >
@@ -76,18 +77,18 @@ const Sidebar = () => {
         <div className='my-5  flex gap-2 items-center'> 
         {location.pathname === "/city" ? (
           <div>
-            <img src='Asset\arrow.png' alt="Black Arrow" />
+            <img src='Asset\green arrow.png' alt="Black Arrow" />
             <img src='Asset\white arrow.png' alt="White Arrow" className="hidden" />
           </div>
         ) : (
           <div>
-            <img src='Asset\blackarrow.png' alt="Black Arrow" className="hidden" />
+            <img src='Asset\green arrow.png' alt="Black Arrow" className="hidden" />
             <img src='Asset\white arrow.png' alt="White Arrow" />
           </div>
         )}
           <NavLink
             className={`relative text-[26px] font-semibold ${
-              location.pathname === "/city" ? "text-black" : "text-white"
+              location.pathname === "/city" ? "text-lime-400" : "text-white"
             } hover:font-bold transition-colors duration-300`}
             to="/city"
           >

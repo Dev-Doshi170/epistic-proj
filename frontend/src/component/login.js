@@ -41,6 +41,8 @@ const Login = () => {
       if (response.ok) {
         localStorage.setItem('authToken', data.authToken);
         localStorage.setItem('tokenTimestamp', Date.now());
+        localStorage.setItem('username',formData.username)
+        localStorage.setItem('password',formData.password)
         navigate('/dashbord');
       } else {
         // Login failed, show error message in toast

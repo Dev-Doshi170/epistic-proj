@@ -486,19 +486,14 @@ const State = () => {
         </button>
       </div>
       <div className="flex-grow  min-h-[calc(100vh-24rem)] overflow-y-visible relative ">
-        <TableContainer component={Paper} style={{ maxHeight: "505px", overflowY: "auto",boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"}}>
-          <Table style={{ minWidth: "911px" }}>
+        <TableContainer component={Paper} style={{ maxHeight: "508px", overflowY: "auto",boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"}}>
+          <Table style={{ minWidth: 800 }}>
             <TableHead>
               <TableRow>
-                <TableCell
-                className="py-2 px-4 text-center w-96"
-                  style={{ textAlign: "center", cursor: "pointer" }}
-                >
-                  State ID 
-                </TableCell>
+                
                 <TableCell
                   style={{ textAlign: "center", cursor: "pointer" }} className="py-2 px-4 text-center">
-                  <div className="text-center ">
+                  <div className="text-center cursor-pointer font-bold text-base" onClick={() => handleSort('statename')}>
                         State Name
                       <button className="ml-2 focus:outline-none" onClick={() => handleSort('statename')}>
                         {sortOrder === 'asc' ? '↓' : '↑'}
@@ -508,14 +503,19 @@ const State = () => {
                 <TableCell
                   className="py-2 px-4 text-center"
                   style={{ textAlign: "center", cursor: "pointer" }}>
-                  <div className="text-center ">
+                  <div className="text-center cursor-pointer font-bold text-base" onClick={() => handleSort('countryname')}>
                           Country Name
                       <button className="ml-2 focus:outline-none" onClick={() => handleSort('countryname')}>
                         {sortOrder === 'asc' ? '↓' : '↑'}
                       </button>
                     </div>
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }} className="py-2 px-4 text-center">Actions</TableCell>
+                <TableCell style={{ textAlign: "center" }} className="py-2 px-4 text-center  ">
+                <div className='font-bold text-base'>
+                Actions
+                </div>
+                
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -528,9 +528,6 @@ const State = () => {
                     key={state.stateid}
                   >
                     <TableCell style={{ textAlign: "center" }}>
-                      {state.stateid}
-                    </TableCell>
-                    <TableCell style={{ textAlign: "center" }}>
                       {state.statename}
                     </TableCell>
                     <TableCell style={{ textAlign: "center" }}>
@@ -538,7 +535,7 @@ const State = () => {
                     </TableCell>
                     <TableCell style={{ textAlign: "center" }}>
                      
-                      <div className='align-baseline flex justify-end'>
+                      <div className='align-baseline flex justify-center'>
                         <button
                           onClick={() =>handleModal(state, "edit", state.countryname)}
                           className=" m-1 text-white  rounded"

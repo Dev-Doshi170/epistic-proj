@@ -208,13 +208,13 @@ const City = () => {
         </button>
       </div>
       <div className="flex-grow min-h-[calc(100vh-24rem)] overflow-y-visible relative ">
-        <TableContainer component={Paper}  style={{ maxHeight: "505px", overflowY: "auto" ,boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"}}>
-          <Table style={{ minWidth: "911px" }}>
+        <TableContainer component={Paper}  style={{ maxHeight: "508px", overflowY: "auto" ,boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"}}>
+          <Table style={{ minWidth: 800 }}>
             <TableHead>
               <TableRow>
-                <TableCell style={{ textAlign: "center" }} className="py-2 px-4 text-center w-96">City ID</TableCell>
+                
                 <TableCell style={{ textAlign: "center" }} className="py-2 px-4 text-center">
-                  <div className="flex items-center">
+                  <div className="flex items-center cursor-pointer justify-center font-bold text-base " onClick={() => handleSort('cityname')}>
                     City Name
                     <button className="ml-2 focus:outline-none" onClick={() => handleSort('cityname')}>
                       {sort === 'asc' ? '↓' : '↑'}
@@ -222,7 +222,7 @@ const City = () => {
                   </div>
                   </TableCell>
                   <TableCell className="py-2 px-4 text-center">
-                  <div className="flex items-center">
+                  <div className="flex items-center cursor-pointer justify-center font-bold text-base "onClick={() => handleSort('statename')}>
                   State Name
                   <button className="ml-2 focus:outline-none" onClick={() => handleSort('statename')}>
                   {sort === 'asc' ? '↓' : '↑'}
@@ -230,8 +230,8 @@ const City = () => {
                   </div>
                   </TableCell>
                   <TableCell className="py-2 px-4 text-center">
-                  <div className="flex items-center">
-                  Country Name
+                  <div className="flex items-center cursor-pointer justify-center font-bold text-base " onClick={() => handleSort('countryname')}>
+                  Country Name 
                   <button className="ml-2 focus:outline-none" onClick={() => handleSort('countryname')}>
                   {sort === 'asc' ? '↓' : '↑'}
                   </button>
@@ -239,7 +239,11 @@ const City = () => {
                   </TableCell>
                 
                 {/* ... (other header cells) */}
-                <TableCell style={{ textAlign: "center" }} className="py-2 px-4 text-center">Actions</TableCell>
+                <TableCell style={{ textAlign: "center" }} className="py-2 px-4 text-center">
+                <div className='font-bold text-base'>
+                Actions
+                </div>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -251,9 +255,7 @@ const City = () => {
                     } hover:bg-gray-200`}
                     key={city.cityid}
                   >
-                    <TableCell style={{ textAlign: "center" }}>
-                      {city.cityid}
-                    </TableCell>
+                    
                     <TableCell style={{ textAlign: "center" }}>
                       {city.cityname}
                     </TableCell>
@@ -266,7 +268,7 @@ const City = () => {
                     {/* ... (other body cells) */}
                     <TableCell style={{ textAlign: "center" }}>
                       
-                      <div className='align-baseline flex justify-end'>
+                      <div className='align-baseline flex justify-center'>
                         <button
                           onClick={() =>handleModal("edit", city.cityname,city.statename,city.countryname,city.cityid,city.countryid,city.stateid)}
                           className=" m-1 text-white  rounded"

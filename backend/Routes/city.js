@@ -74,16 +74,18 @@ router.put('/cityupdate', async (req, res) => {
     
     // Update city with cityname, stateid, and countryid
     const duplicateCityCheck = await client.query(
-      'SELECT COUNT(*) FROM city WHERE LOWER(cityname) = LOWER($1) and stateid = $2 AND isdeleted = false',
+      'SELECT * FROM city WHERE LOWER(cityname) = LOWER($1) and stateid = $2 AND isdeleted = false',
       [cityname.toLowerCase(),stateid]
     );
-      console.log("hii",duplicateCityCheck.rows[0])
+    
 
+    if (duplicateCityCheck.rows.length > 0) {
     if (duplicateCityCheck.rows[0].stateid === stateid && duplicateCityCheck.rows[0].cityname === cityname) {
+      console.log(duplicateCityCheck.rows[0])
       // Duplicate city found in the same state
       return res.status(400).json({ error: 'City with the same name in same state already exists in the specified state' });
     }
-
+  }
     const result = await client.query('UPDATE city SET cityname = $1, stateid = $2, countryid = $3 WHERE cityid = $4 RETURNING *',
       [cityname, stateid, countryid, cityid]);
 

@@ -250,21 +250,16 @@ const handleLastPageButtonClick = () => {
         <div className="flex-grow w-[100%] min-h-[calc(100vh-24rem)] overflow-y-visible relative  rounded-xl  ">
           <TableContainer
             component={Paper}
-            style={{ maxHeight: "505px", overflowY: "auto",boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
+            style={{ maxHeight: "508px", overflowY: "auto",boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
           >
-            <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+            <Table sx={{ minWidth: 800 }} aria-label="custom pagination table">
               <TableHead
                 style={{ position: "sticky", top: 0, background: "#fff" }}
               >
                 <TableRow>
-                  <TableCell
-                    style={{ textAlign: "center" }}
-                    className="py-2 px-4 text-center w-96"
-                  >
-                    Country ID
-                  </TableCell>
+                 
                   <TableCell className="py-2 px-4 text-center">
-                    <div className="flex items-center">
+                    <div className="flex items-center cursor-pointer justify-center  font-bold text-base" onClick={() => handleSortClick("countryname")}>
                       Country Name
                       {!isSearching && (
                         <button
@@ -277,7 +272,7 @@ const handleLastPageButtonClick = () => {
                     </div>
                   </TableCell>
                   <TableCell className="py-2 px-4 text-center">
-                    <div className="flex items-center">
+                    <div className="flex items-center cursor-pointer justify-center  font-bold text-base" onClick={() => handleSortClick("countrycode")}>
                       Country Code
                       {!isSearching && (
                         <button
@@ -290,7 +285,7 @@ const handleLastPageButtonClick = () => {
                     </div>
                   </TableCell>
                   <TableCell className="py-2 px-4 text-center">
-                    <div className="flex items-center">
+                    <div className="flex items-center cursor-pointer justify-center  font-bold text-base" onClick={() => handleSortClick("phonecode")}>
                       Phone Code
                       {!isSearching && (
                         <button
@@ -303,10 +298,12 @@ const handleLastPageButtonClick = () => {
                     </div>
                   </TableCell>
                   <TableCell
-                    style={{ textAlign: "center" }}
-                    className="py-2 px-4 text-center"
+                    
+                    className=" text-center "
                   >
-                    Actions
+                  <div className='flex justify-center font-bold text-base'>
+                  Actions
+                  </div>
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -319,12 +316,7 @@ const handleLastPageButtonClick = () => {
                         index % 2 === 0 ? "bg-gray-100" : "bg-white"
                       } hover:bg-gray-200`}
                     >
-                      <TableCell
-                        style={{ textAlign: "center" }}
-                        className="py-2 px-4"
-                      >
-                        {country.countryid}
-                      </TableCell>
+                      
                       <TableCell
                         style={{ textAlign: "center" }}
                         className="py-2 px-4"
@@ -345,7 +337,7 @@ const handleLastPageButtonClick = () => {
                       </TableCell>
                       <TableCell
                       >
-                      <div className='align-baseline flex justify-end'>
+                      <div className='align-baseline flex justify-center'>
                         <button
                           onClick={() => handleModal("edit", country)}
                           className=" m-1 text-white  rounded"
